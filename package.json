@@ -37,13 +37,7 @@
     "wallet"
   ],
   "dependencies": {
-    "@emotion/react": "latest",
-    "@emotion/styled": "latest",
-    "@massalabs/massa-web3": "^1.9.6",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^16.11.26",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^18.0.0",
+    "@massalabs/massa-web3": "^1.9.7",
     "assert": "^2.0.0",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
@@ -51,6 +45,9 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^18.0.0",
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.0.1",
     "@types/node": "^17.0.23",
