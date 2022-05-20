@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "commonjs",
+        "module": "esnext",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "jsx": "preserve",
+        "jsx": "react",
         "allowJs": true,
         "importHelpers": true,
-        "alwaysStrict": true,
         "sourceMap": true,
+        "declaration": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -56,7 +56,8 @@
         "./node_modules/@types/node/index.d.ts"
     ],
     "include": [
-        "./src/**/*.ts"
+        "./src/**/*.ts",
+        "src/massaPlugin/context.tsx"
     ],
     "exclude": [
         "./node_modules/**/*",

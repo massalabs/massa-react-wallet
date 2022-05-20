@@ -21,6 +21,13 @@
   "license": "MIT",
   "repository": "https://github.com/massalabs/massa-react-wallet",
   "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist"
+  ],
   "keywords": [
     "react",
     "extension",

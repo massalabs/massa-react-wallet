@@ -1,45 +1,41 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.PropTypesMassaObject = exports.PropTypesMassa = exports.withMassaPlugin = exports.createMassaContext = exports.waitWithTimeout = void 0;
-const tslib_1 = require("tslib");
-const react_1 = require("react");
-const react_2 = require("react");
-const prop_types_1 = require("prop-types");
-const MassaPlugin_1 = require("./MassaPlugin");
-const errors_1 = require("./errors");
-const isEqual_1 = require("lodash/isEqual");
-const sortBy_1 = require("lodash/sortBy");
+import { __awaiter, __rest } from "tslib";
+import React from 'react';
+import { Component } from 'react';
+import PropTypes from "prop-types";
+import MassaPlugin from './MassaPlugin';
+import { DISABLED, NOT_INSTALLED, TIMEOUT } from './errors';
+import isEqual from "lodash/isEqual";
+import sortBy from "lodash/sortBy";
 const isEqualArray = (array1, array2) => {
-    return (0, isEqual_1.default)((0, sortBy_1.default)(array1), (0, sortBy_1.default)(array2));
+    return isEqual(sortBy(array1), sortBy(array2));
 };
 const getDisplayName = (WrappedComponent) => {
     return WrappedComponent.displayName || WrappedComponent.name || "Component";
 };
 function withTimeoutRejection(promise, timeout) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        const sleep = new Promise((resolve, reject) => setTimeout(() => reject(new Error(errors_1.TIMEOUT)), timeout));
+    return __awaiter(this, void 0, void 0, function* () {
+        const sleep = new Promise((resolve, reject) => setTimeout(() => reject(new Error(TIMEOUT)), timeout));
         return Promise.race([promise, sleep]);
     });
 }
-function waitWithTimeout(milliseconds) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
+export function waitWithTimeout(milliseconds) {
+    return __awaiter(this, void 0, void 0, function* () {
         const sleep = new Promise((resolve, reject) => setTimeout(() => resolve(), milliseconds));
         yield sleep;
     });
 }
-exports.waitWithTimeout = waitWithTimeout;
-function createMassaContext(initial) {
+export function createMassaContext(initial) {
     // create massa context
-    const Context = react_1.default.createContext(initial);
+    const Context = React.createContext(initial);
     Context.displayName = "ReactMassaContext";
     const ContextProvider = Context.Provider;
-    class MassaContextProvider extends react_2.Component {
+    class MassaContextProvider extends Component {
         constructor(props) {
             super(props);
             // private class vars
             this.watcher = null; // timer created with `setTimeout`
             this.massa = null;
-            this.handleWatch = () => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            this.handleWatch = () => __awaiter(this, void 0, void 0, function* () {
                 // if there is an already existing watcher, clear it
                 if (this.watcher) {
                     clearTimeout(this.watcher);
@@ -52,10 +48,10 @@ function createMassaContext(initial) {
                 let web3 = null;
                 let accounts = [];
                 try {
-                    const isDisabled = error && error.message === errors_1.DISABLED;
+                    const isDisabled = error && error.message === DISABLED;
                     // in case of no MassaPlugin or a disabled one, try to load it again
                     if (!this.massa || isDisabled) {
-                        this.massa = (yield withTimeoutRejection(MassaPlugin_1.default.initialize(this.props.options), this.props.timeout));
+                        this.massa = (yield withTimeoutRejection(MassaPlugin.initialize(this.props.options), this.props.timeout));
                     }
                     // get the underlying web3 instance
                     web3 = yield this.massa.getWeb3();
@@ -80,7 +76,7 @@ function createMassaContext(initial) {
         }
         componentDidMount() {
             this.setState({
-                error: MassaPlugin_1.default.hasWeb3() ? null : new Error(errors_1.NOT_INSTALLED)
+                error: MassaPlugin.hasWeb3() ? null : new Error(NOT_INSTALLED)
             });
             this.handleWatch();
         }
@@ -114,7 +110,7 @@ function createMassaContext(initial) {
             }
         }
         render() {
-            const _a = this.props, { value } = _a, props = tslib_1.__rest(_a, ["value"]);
+            const _a = this.props, { value } = _a, props = __rest(_a, ["value"]);
             const internalValue = {
                 web3: this.state.web3,
                 accounts: this.state.accounts,
@@ -122,14 +118,14 @@ function createMassaContext(initial) {
                 awaiting: this.state.awaiting,
                 openMassa: this.handleWatch,
             };
-            return <ContextProvider {...props} value={internalValue}/>;
+            return React.createElement(ContextProvider, Object.assign({}, props, { value: internalValue }));
         }
     }
     MassaContextProvider.propTypes = {
-        value: prop_types_1.default.any,
-        delay: prop_types_1.default.number,
-        timeout: prop_types_1.default.number,
-        options: prop_types_1.default.object, // Massa Plugin class initialize options
+        value: PropTypes.any,
+        delay: PropTypes.number,
+        timeout: PropTypes.number,
+        options: PropTypes.object, // Massa Plugin class initialize options
     };
     MassaContextProvider.defaultProps = {
         value: null,
@@ -140,23 +136,19 @@ function createMassaContext(initial) {
     Context.Provider = MassaContextProvider;
     return Context;
 }
-exports.createMassaContext = createMassaContext;
-const withMassaPlugin = (MassaContext) => {
+export const withMassaPlugin = (MassaContext) => {
     return function withMassaContext(Comp) {
-        const ComponentWithMassa = react_1.default.forwardRef((props, ref) => (<MassaContext.Consumer>
-          {massa => <Comp ref={ref} massa={massa} {...props}/>}
-        </MassaContext.Consumer>));
+        const ComponentWithMassa = React.forwardRef((props, ref) => (React.createElement(MassaContext.Consumer, null, massa => React.createElement(Comp, Object.assign({ ref: ref, massa: massa }, props)))));
         ComponentWithMassa.displayName = `withMassaPlugin(${getDisplayName(Comp)})`;
         return ComponentWithMassa;
     };
 };
-exports.withMassaPlugin = withMassaPlugin;
-exports.PropTypesMassa = {
-    web3: prop_types_1.default.object,
-    accounts: prop_types_1.default.arrayOf(prop_types_1.default.any).isRequired,
-    error: prop_types_1.default.object,
-    awaiting: prop_types_1.default.bool.isRequired,
-    openMassa: prop_types_1.default.func.isRequired,
+export const PropTypesMassa = {
+    web3: PropTypes.object,
+    accounts: PropTypes.arrayOf(PropTypes.any).isRequired,
+    error: PropTypes.object,
+    awaiting: PropTypes.bool.isRequired,
+    openMassa: PropTypes.func.isRequired,
 };
-exports.PropTypesMassaObject = prop_types_1.default.shape(exports.PropTypesMassa);
-//# sourceMappingURL=context.jsx.map
+export const PropTypesMassaObject = PropTypes.shape(PropTypesMassa);
+//# sourceMappingURL=context.js.map
