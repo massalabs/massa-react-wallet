@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/massa-react-wallet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "massa's react wallet plugin",
   "main": "dist/index.js",
   "scripts": {
